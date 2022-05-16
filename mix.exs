@@ -23,7 +23,7 @@ defmodule Eavesdropper.MixProject do
   defp package do
     [
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/anthonyfalzetti/eavesdropper"}
+      links: %{"GitHub" => "https://github.com/anthonyfalzetti/eavesdropper"},
       maintainers: ["Anthony Falzetti"],
       name: "eavesdropper",
     ]
