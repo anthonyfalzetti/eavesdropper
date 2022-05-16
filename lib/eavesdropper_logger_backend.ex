@@ -55,7 +55,6 @@ defmodule EavesdropperLoggerBackend do
     Application.get_env(:logger, name, [])
     |> Keyword.merge(opts)
     |> Enum.into(@base_config)
-    |> IO.inspect(label: :configure)
   end
 
   defp configure(_name, [level: new_level], state) do
