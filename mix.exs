@@ -4,27 +4,28 @@ defmodule Eavesdropper.MixProject do
   def project do
     [
       app: :eavesdropper,
-      version: "0.1.0",
+      version: "0.0.1",
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       description: description(),
       package: package(),
-      deps: deps()
+      deps: deps(),
+      source_url: "https://github.com/anthonyfalzetti/eavesdropper"
     ]
   end
 
   defp description do
     """
-    Library for forwarding logs to another application
+    An elixir log forwarding library
     """
   end
 
   defp package do
     [
-      files: ["lib", "mix.exs", "README*"],
-      maintainers: ["Anthony Falzetti"],
       licenses: ["MIT"],
-      links: %{"GitHub" => ""}
+      links: %{"GitHub" => "https://github.com/anthonyfalzetti/eavesdropper"}
+      maintainers: ["Anthony Falzetti"],
+      name: "eavesdropper",
     ]
   end
 
