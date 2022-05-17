@@ -3,6 +3,8 @@ defmodule Eavesdropper.EavesdropperReceiver do
 
   require Logger
 
+  alias Logger.Formatter
+
   # Client
 
   def start_link(default) when is_list(default) do
@@ -16,35 +18,41 @@ defmodule Eavesdropper.EavesdropperReceiver do
   end
 
   @impl true
-  def handle_cast(
-        {:message_received, %{level: :info, message: message, app_name: app_name}},
-        state
-      ) do
-    Logger.info("#{app_name}: #{message}")
+  def handle_cast({:message_received, %{level: :info} = params}, state) do
+    params
+    |> format_msg()
+    |> Logger.info()
+
     {:noreply, state}
   end
 
-  def handle_cast(
-        {:message_received, %{level: :debug, message: message, app_name: app_name}},
-        state
-      ) do
-    Logger.debug("#{app_name}: #{message}")
+  def handle_cast({:message_received, %{level: :debug} = params}, state) do
+    params
+    |> format_msg()
+    |> Logger.debug()
+
     {:noreply, state}
   end
 
-  def handle_cast(
-        {:message_received, %{level: :warn, message: message, app_name: app_name}},
-        state
-      ) do
-    Logger.warn("#{app_name}: #{message}")
+  def handle_cast({:message_received, %{level: :warn} = params}, state) do
+    params
+    |> format_msg()
+    |> Logger.warn()
+
     {:noreply, state}
   end
 
-  def handle_cast(
-        {:message_received, %{level: :error, message: message, app_name: app_name}},
-        state
-      ) do
-    Logger.error("#{app_name}: #{message}")
+  def handle_cast({:message_received, %{level: :error} = params}, state) do
+    params
+    |> format_msg()
+    |> Logger.error()
+
     {:noreply, state}
+  end
+
+  defp format_msg(%{message: message, app_name: app_name, timestamp: {date, time}}) do
+    dt_date = Formatter.format_date(date)
+    dt_time = Formatter.format_time(time)
+    "#{app_name} - #{dt_date}T#{dt_time}Z: #{message}"
   end
 end

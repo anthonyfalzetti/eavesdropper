@@ -33,9 +33,9 @@ config :logger, EavesdropperLoggerBackend,
  level: :warn
 ```
 
-### Future Work (in no particular order)
-1. Allow configuration after deployment
+
+### Runtime configuration changes
+Changes can be changed at runtime using the following example.
 ```elixir
-EavesdropperLoggerBackend.configure(level: :debug)
+Logger.configure_backend(EavesdropperLoggerBackend, level: :warn)
 ```
-2. During the forwarding process attach app name and other pertinent metadata that would be useful for a centralized logging app to have

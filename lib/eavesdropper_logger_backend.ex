@@ -7,6 +7,7 @@ defmodule EavesdropperLoggerBackend do
   require Logger
 
   @base_config %{
+    name: __MODULE__,
     level: :error,
     truncate: 4096
   }
