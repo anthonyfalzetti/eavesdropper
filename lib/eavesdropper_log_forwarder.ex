@@ -11,16 +11,28 @@ defmodule Eavesdropper.EavesdropperLogForwarder do
 
   def init(_) do
     :ok = :net_kernel.monitor_nodes(true)
-    {:ok, []}
+
+    receiving_node =
+      Application.get_env(:logger, EavesdropperLoggerBackend)
+      |> Keyword.get(:receiving_node, "earth@127.0.0.1")
+
+    initial_state = %{receiving_node: receiving_node}
+    {:ok, initial_state}
   end
 
-  def handle_info({:nodeup, :"earth@127.0.0.1"}, state) do
-    Logger.add_backend(EavesdropperLoggerBackend)
+  def handle_info({:nodeup, node_name}, %{receiving_node: receiving_node} = state) do
+    if node_name == :"#{receiving_node}" do
+      Logger.add_backend(EavesdropperLoggerBackend)
+    end
+
     {:noreply, state}
   end
 
-  def handle_info({:nodedown, :"earth@127.0.0.1"}, state) do
-    Logger.remove_backend(EavesdropperLoggerBackend)
+  def handle_info({:nodedown, node_name}, %{receiving_node: receiving_node} = state) do
+    if node_name == :"#{receiving_node}" do
+      Logger.remove_backend(EavesdropperLoggerBackend)
+    end
+
     {:noreply, state}
   end
 

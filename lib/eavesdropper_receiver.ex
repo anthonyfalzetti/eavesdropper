@@ -16,23 +16,35 @@ defmodule Eavesdropper.EavesdropperReceiver do
   end
 
   @impl true
-  def handle_cast({:message_received, %{level: :info, message: message}}, state) do
-    Logger.info("Message Received: #{message}")
+  def handle_cast(
+        {:message_received, %{level: :info, message: message, app_name: app_name}},
+        state
+      ) do
+    Logger.info("#{app_name}: #{message}")
     {:noreply, state}
   end
 
-  def handle_cast({:message_received, %{level: :debug, message: message}}, state) do
-    Logger.debug("Message Received: #{message}")
+  def handle_cast(
+        {:message_received, %{level: :debug, message: message, app_name: app_name}},
+        state
+      ) do
+    Logger.debug("#{app_name}: #{message}")
     {:noreply, state}
   end
 
-  def handle_cast({:message_received, %{level: :warn, message: message}}, state) do
-    Logger.warn("Message Received: #{message}")
+  def handle_cast(
+        {:message_received, %{level: :warn, message: message, app_name: app_name}},
+        state
+      ) do
+    Logger.warn("#{app_name}: #{message}")
     {:noreply, state}
   end
 
-  def handle_cast({:message_received, %{level: :error, message: message}}, state) do
-    Logger.error("Message Received: #{message}")
+  def handle_cast(
+        {:message_received, %{level: :error, message: message, app_name: app_name}},
+        state
+      ) do
+    Logger.error("#{app_name}: #{message}")
     {:noreply, state}
   end
 end

@@ -21,10 +21,16 @@ defmodule EavesdropperLoggerBackend do
 
   def handle_event(
         {level, _groupleader, {Logger, message, timestamp, metadata}},
-        %{level: min_level, receiving_node: receiving_node} = state
+        %{level: min_level, receiving_node: receiving_node, app_name: app_name} = state
       ) do
     if should_log?(min_level, level) do
-      msg = %{level: level, message: message, timestamp: timestamp, metadata: metadata}
+      msg = %{
+        level: level,
+        message: message,
+        timestamp: timestamp,
+        metadata: metadata,
+        app_name: app_name
+      }
 
       GenServer.cast(
         {Eavesdropper.EavesdropperReceiver, :"#{receiving_node}"},
