@@ -33,7 +33,6 @@ config :logger, EavesdropperLoggerBackend,
  level: :warn
 ```
 
-
 ### Runtime configuration changes
 Changes can be changed at runtime using the following example.
 ```elixir
