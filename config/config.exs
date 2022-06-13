@@ -1,7 +1,6 @@
 import Config
 
-config :logger, EavesdropperBackend,
+config :eavesdropper,
   receiving_node: "earth@127.0.0.1",
-  level: :error,
-  truncate: 4096,
-  receiver: Eavesdropper.EavesdropperReceiver
+  min_level: :error,
+  truncate: 4096
