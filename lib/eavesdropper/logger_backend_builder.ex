@@ -4,6 +4,11 @@ defmodule Eavesdropper.LoggerBackendBuilder do
   greater than the configured level
   """
 
+  def build_arguments() do
+    contents = build_contents()
+    [EavesdropperLoggerBackend, contents, Macro.Env.location(__ENV__)]
+  end
+
   def build_contents() do
     config = Application.get_all_env(:eavesdropper)
 
@@ -24,7 +29,10 @@ defmodule Eavesdropper.LoggerBackendBuilder do
         {:ok, :ok, configure(state, opts)}
       end
 
-      def handle_event({level, _groupleader, msg}, %{receiving_node: receiving_node, min_level: min_level} = state) do
+      def handle_event(
+            {level, _groupleader, msg},
+            %{receiving_node: receiving_node, min_level: min_level} = state
+          ) do
         if should_log?(min_level, level) do
           GenServer.cast({Receiver, :"#{receiving_node}"}, {:message_received, {level, msg}})
         end
@@ -45,6 +53,10 @@ defmodule Eavesdropper.LoggerBackendBuilder do
       end
 
       def code_change(_old, state, _extra) do
+        {:ok, state}
+      end
+
+      def handle_event(_, state) do
         {:ok, state}
       end
 

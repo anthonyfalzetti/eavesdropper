@@ -26,13 +26,11 @@ defmodule Eavesdropper.Receiver do
     {:reply, state, state}
   end
 
-
   @impl true
   def handle_cast({:message_received, {level, msg}}, [forward: true, receiver: receiver] = state) do
-    GenServer.cast(receiver, {:message_received, msg})
+    GenServer.cast(receiver, {:message_received, {level, msg}})
     {:noreply, state}
   end
-
 
   @impl true
   def handle_cast({:message_received, {level, msg}}, state) do
@@ -42,7 +40,7 @@ defmodule Eavesdropper.Receiver do
     {:noreply, state}
   end
 
-  defp format_msg({Logger, message, {date, time}, metadata}) do
+  defp format_msg({Logger, message, {date, time}, _metadata}) do
     dt_date = Formatter.format_date(date)
     dt_time = Formatter.format_time(time)
     "#{dt_date}T#{dt_time}Z: #{message}"

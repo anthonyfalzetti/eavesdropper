@@ -1,8 +1,12 @@
 defmodule Eavesdropper do
+  @moduledoc """
+  Eavesdropper allows a node to receive the logs of other nodes without adding a
+  dependency. This is done via creating the Eavesdropper.LoggerBackend on the
+  target node and adding it as a Logger backend.
+  """
 
-  def add_eavesdropper(node_name) do
-    contents = Eavesdropper.LoggerBackendBuilder.build_contents()
-    :rpc.call(:"#{node_name}", Module, :create, [EavesdropperLoggerBackend, contents, Macro.Env.location(__ENV__)])
-    :rpc.call(:"#{node_name}", Logger, :add_backend, [EavesdropperLoggerBackend])
-  end
+  alias Eavesdropper.LogForwarder
+
+  defdelegate start_eavesdropping(node_name), to: LogForwarder
+  defdelegate stop_eavesdropping(node_name), to: LogForwarder
 end
