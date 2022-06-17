@@ -4,12 +4,15 @@ defmodule Eavesdropper.LoggerBackendBuilder do
   greater than the configured level
   """
 
+  @doc "Returns the arguments for Module.create for a Logger backend that
+        will cast the messages that exceed the min_log threshold to the receiving node"
+  @spec build_arguments() :: [atom(), binary(), list()]
   def build_arguments() do
     contents = build_contents()
     [EavesdropperLoggerBackend, contents, Macro.Env.location(__ENV__)]
   end
 
-  def build_contents() do
+  defp build_contents() do
     config = Application.get_all_env(:eavesdropper)
 
     quote do

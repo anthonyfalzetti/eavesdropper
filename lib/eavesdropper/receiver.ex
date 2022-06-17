@@ -7,18 +7,20 @@ defmodule Eavesdropper.Receiver do
 
   # Client
 
+  @spec start_link(list()) :: :ok
   def start_link(default) when is_list(default) do
     GenServer.start_link(__MODULE__, default, name: __MODULE__)
+  end
+
+  @doc "Simply returns the current state"
+  def get_state() do
+    GenServer.call(__MODULE__, :get_state)
   end
 
   # Server
   @impl true
   def init(initial_state) do
     {:ok, configure(initial_state)}
-  end
-
-  def get_state() do
-    GenServer.call(__MODULE__, :get_state)
   end
 
   @impl true

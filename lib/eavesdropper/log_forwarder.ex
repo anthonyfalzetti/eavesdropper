@@ -24,6 +24,7 @@ defmodule Eavesdropper.LogForwarder do
     GenServer.call(__MODULE__, {:stop_eavesdrop_on_node, node_name})
   end
 
+  @doc "Simply returns the current state"
   @spec get_state() :: map()
   def get_state() do
     GenServer.call(__MODULE__, :get_state)
@@ -59,13 +60,11 @@ defmodule Eavesdropper.LogForwarder do
   def handle_call({:stop_eavesdrop_on_node, node_name}, _pid, state) do
     result = :rpc.call(:"#{node_name}", Logger, :remove_backend, [EavesdropperLoggerBackend])
 
-    {:reply, result, %{state | listening_posts: List.delete(state.listening_posts, node_name)}
+    {:reply, result, %{state | listening_posts: List.delete(state.listening_posts, node_name)}}
   end
 
   @impl true
   def terminate(reason, %{listening_posts: posts}) do
-    Logger.info(
-      "LogForwarder is terminating for #{inspect(reason)} with #{Enum.count(posts)} still being eavesdropped on."
-    )
+    Enum.each(posts, &(stop_eavesdropping(&1))
   end
 end
