@@ -7,7 +7,7 @@ defmodule Eavesdropper.LogForwarder do
   require Logger
   alias Eavesdropper.LoggerBackendBuilder
 
-  @spec start_link(list()) :: :ok
+  @spec start_link(keyword) :: :ignore | {:error, any} | {:ok, pid}
   def start_link(args) do
     GenServer.start_link(__MODULE__, args, name: Keyword.get(args, :name, __MODULE__))
   end
@@ -47,16 +47,14 @@ defmodule Eavesdropper.LogForwarder do
     {:reply, state, state}
   end
 
-  @impl true
   def handle_call({:eavesdrop_on_node, node_name}, _pid, %{listening_posts: posts} = state) do
-    :rpc.call(:"#{node_name}", Module, :create, LoggerBackendBuilder.build_arguments())
+    :rpc.call(:"#{node_name}", Module, :create, LoggerBackendBuilder.build_arguments(node_name))
 
     result = :rpc.call(:"#{node_name}", Logger, :add_backend, [EavesdropperLoggerBackend])
 
     {:reply, result, %{state | listening_posts: [node_name | posts]}}
   end
 
-  @impl true
   def handle_call({:stop_eavesdrop_on_node, node_name}, _pid, state) do
     result = :rpc.call(:"#{node_name}", Logger, :remove_backend, [EavesdropperLoggerBackend])
 
@@ -64,7 +62,7 @@ defmodule Eavesdropper.LogForwarder do
   end
 
   @impl true
-  def terminate(reason, %{listening_posts: posts}) do
-    Enum.each(posts, &(stop_eavesdropping(&1))
+  def terminate(_reason, %{listening_posts: posts}) do
+    Enum.each(posts, &stop_eavesdropping(&1))
   end
 end

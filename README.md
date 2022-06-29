@@ -1,7 +1,7 @@
 # Eavesdropper
 
 ## Motivation
-We wanted the ability for a node to join a cluster and monitor the logs of all the nodes in the cluster without adding anything as a dependency. 
+We wanted the ability for a node to join a cluster and monitor the logs of all the nodes in the cluster without adding anything as a dependency.
 
 ## Installation
 
@@ -17,26 +17,17 @@ def deps do
   ]
 end
 ```
-2. Add `{Eavesdropper.EavesdropperReceiver, []}` to the application tree
-### Installing and configuring the forwarding application
-1. add `:eavesdropper` to your dependencies
+2. add to the application tree
 ```elixir
-def deps do
-  [
-    {:eavesdropper, "~> 0.0.1"}
-  ]
-end
+  {Eavesdropper.Receiver, []},
+  {Eavesdropper.LogForwarder, []}
 ```
-2. Add `{Eavesdropper.EavesdropperLogForwarder, []}` to the application tree
-3. Configure the EavesdropperLoggerBackend
+3. Add configs
 ```elixir
-config :logger, EavesdropperLoggerBackend,
- receiving_node: node_name,
- level: :warn
+config :eavesdropper,
+  receiving_node: "earth@127.0.0.1", # name of the node that will receive the logs
+  min_level: :error, # The minimum level of logs to be forwarded
+  truncate: 4096 # max of logs (default is what Logger is defaulted to)
 ```
-
-### Runtime configuration changes
-Changes can be changed at runtime using the following example.
-```elixir
-Logger.configure_backend(EavesdropperLoggerBackend, level: :warn)
-```
+4. Once connected to a node run `Eavesdropper.start_eavesdropping(node_name)` to start seeing the logs from the target node
+5. To stop eavesdropping on a target node run `Eavesdropper.stop_eavesdropping(node_name)`

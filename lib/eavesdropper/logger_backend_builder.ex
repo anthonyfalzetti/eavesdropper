@@ -6,14 +6,15 @@ defmodule Eavesdropper.LoggerBackendBuilder do
 
   @doc "Returns the arguments for Module.create for a Logger backend that
         will cast the messages that exceed the min_log threshold to the receiving node"
-  @spec build_arguments() :: [atom(), binary(), list()]
-  def build_arguments() do
-    contents = build_contents()
+  def build_arguments(node_name) do
+    contents = build_contents(node_name)
     [EavesdropperLoggerBackend, contents, Macro.Env.location(__ENV__)]
   end
 
-  defp build_contents() do
-    config = Application.get_all_env(:eavesdropper)
+  defp build_contents(node_name) do
+    config =
+      Application.get_all_env(:eavesdropper)
+      |> Keyword.put(:node_name, node_name)
 
     quote do
       @moduledoc """
@@ -34,10 +35,13 @@ defmodule Eavesdropper.LoggerBackendBuilder do
 
       def handle_event(
             {level, _groupleader, msg},
-            %{receiving_node: receiving_node, min_level: min_level} = state
+            %{receiving_node: receiving_node, min_level: min_level, node_name: node_name} = state
           ) do
         if should_log?(min_level, level) do
-          GenServer.cast({Receiver, :"#{receiving_node}"}, {:message_received, {level, msg}})
+          GenServer.cast(
+            {Receiver, :"#{receiving_node}"},
+            {:message_received, {level, msg, node_name}}
+          )
         end
 
         {:ok, state}
@@ -70,8 +74,7 @@ defmodule Eavesdropper.LoggerBackendBuilder do
       end
 
       defp configure(state, opts) do
-        state
-        |> Map.merge(Enum.into(%{}, opts))
+        Map.merge(state, Enum.into(%{}, opts))
       end
     end
   end
