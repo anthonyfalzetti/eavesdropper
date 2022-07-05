@@ -50,15 +50,25 @@ defmodule Eavesdropper.LogForwarder do
   def handle_call({:eavesdrop_on_node, node_name}, _pid, %{listening_posts: posts} = state) do
     :rpc.call(:"#{node_name}", Module, :create, LoggerBackendBuilder.build_arguments(node_name))
 
-    result = :rpc.call(:"#{node_name}", Logger, :add_backend, [EavesdropperLoggerBackend])
+    :rpc.call(:"#{node_name}", Logger, :add_backend, [EavesdropperLoggerBackend])
+    |> case do
+      {:ok, _pid} ->
+        {:reply, :ok, %{state | listening_posts: [node_name | posts]}}
 
-    {:reply, result, %{state | listening_posts: [node_name | posts]}}
+      other ->
+        {:reply, other, state}
+    end
   end
 
   def handle_call({:stop_eavesdrop_on_node, node_name}, _pid, state) do
-    result = :rpc.call(:"#{node_name}", Logger, :remove_backend, [EavesdropperLoggerBackend])
+    :rpc.call(:"#{node_name}", Logger, :remove_backend, [EavesdropperLoggerBackend])
+    |> case do
+      :ok ->
+        {:reply, :ok, %{state | listening_posts: List.delete(state.listening_posts, node_name)}}
 
-    {:reply, result, %{state | listening_posts: List.delete(state.listening_posts, node_name)}}
+      other ->
+        {:reply, other, state}
+    end
   end
 
   @impl true
