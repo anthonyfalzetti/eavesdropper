@@ -25,7 +25,7 @@ defmodule Eavesdropper.MixProject do
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/anthonyfalzetti/eavesdropper"},
       maintainers: ["Anthony Falzetti"],
-      name: "eavesdropper",
+      name: "eavesdropper"
     ]
   end
 
