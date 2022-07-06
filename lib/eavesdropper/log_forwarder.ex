@@ -13,13 +13,13 @@ defmodule Eavesdropper.LogForwarder do
   end
 
   @doc "Creates Eavesdropper.LoggerBackend on the target node, and adds it as a logger backend"
-  @spec start_eavesdropping(binary()) :: {:ok, pid()} | {:badrpc, :nodedown}
+  @spec start_eavesdropping(node()) :: {:ok, pid()} | {:badrpc, :nodedown}
   def start_eavesdropping(node_name) do
     GenServer.call(__MODULE__, {:eavesdrop_on_node, node_name})
   end
 
   @doc "Removes Eavesdropper.LoggerBackend as a backend on target node"
-  @spec stop_eavesdropping(binary()) :: :ok | {:badrpc, :nodedown}
+  @spec stop_eavesdropping(node()) :: :ok | {:badrpc, :nodedown}
   def stop_eavesdropping(node_name) do
     GenServer.call(__MODULE__, {:stop_eavesdrop_on_node, node_name})
   end
