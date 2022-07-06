@@ -4,7 +4,7 @@ defmodule Eavesdropper.MixProject do
   def project do
     [
       app: :eavesdropper,
-      version: "0.0.1",
+      version: "0.0.2",
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -36,6 +36,8 @@ defmodule Eavesdropper.MixProject do
   end
 
   defp deps do
-    []
+    [
+      {:ex_doc, "~> 0.14", only: :dev, runtime: false}
+    ]
   end
 end
